@@ -1,0 +1,23 @@
+{
+  "name": "tutsplus-video-tools",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "tvt-fadeinout": "fadeinout.js",
+    "tvt-split": "split.js",
+    "tvt-combine": "combine.js",
+    "tvt-auphonic": "auphonic.js"
+  },
+  "author": "Adam Brown",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "fluent-ffmpeg": "^2.1.0",
+    "nconf": "^0.8.4",
+    "request": "^2.72.0"
+  }
+}
