@@ -45,13 +45,17 @@ function applyFiltersAsync (program, filename, filters) {
     if (program.verbose) 
       console.log(`Applying filters to ${filename}, writing to ${outputFilename}`)
   
-    ffmpeg(filename)
-      .videoFilters(filters)
+    let cmd = ffmpeg(filename)
+
+    cmd.videoFilter(filters)
+    
+    cmd
       .on('error', err => reject(err))
       .on('end', () => resolve())
       .save(outputFilename)
   })
 }
+
 
 //wraps the ffprobe function of the fluent-ffmpeg module in a promise
 function getMetadataAsync (program, filename) {

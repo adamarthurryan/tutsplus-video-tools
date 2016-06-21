@@ -10,7 +10,8 @@
     "tvt-fadeinout": "fadeinout.js",
     "tvt-split": "split.js",
     "tvt-combine": "combine.js",
-    "tvt-auphonic": "auphonic.js"
+    "tvt-auphonic": "auphonic.js",
+    "tvt-remove-titlecard": "remove-titlecard.js"
   },
   "author": "Adam Brown",
   "license": "BSD-2-Clause",
