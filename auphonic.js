@@ -1,8 +1,5 @@
 #!/usr/bin/env node
 
-//!!! username/password should be loaded from config if possible
-
-
 const path = require('path')
 const program = require('commander')
 const request = require('request')
@@ -28,37 +25,45 @@ program
   .option('--debug', 'Dump debugging info to the console')
   .parse(process.argv)
 
-//!!! should enforce username and password
-if (program.username === undefined) {
-  console.log("Auphonic username is not set. Use the -u <username> flag.")
-  process.exit(1)
-}
-if (program.password === undefined) {
-  console.log("Auphonic password is not set. Use the -p <password> flag.")
-  process.exit(1)
-}
+//command-line username and password override the config file
+if (program.username)
+  config.auphonicUsername = program.username
+if (program.password)
+  config.auphonicPassword = program.password
+
+//assert that an Auphonic user has been configured
+config.requireAuphonicUser()
 
 //ensure that the output folder exists
 commands.ensureOutputFolder(program)
 
+//run the Auphonic command on all files
 commands.runCommandAllConcurrent(program, program.args, auphonicCommand)
 
+//sequence the creation of production, uploading of file, etc. with the Auphonic API
 function auphonicCommand (options, filename, metadata) {
+  //first the production is created, file is uploaded and the production is started
+  //these all resolve to the production uuid
   let pUuid = createProductionAsync(options, filename)
     .then( uuid => uploadFileToProductionAsync(options,filename, uuid))
     .then( uuid => startProductionAsync(options, filename, uuid))
 
+  //now wait until the production is finished processing
+  //this resolves to the auphonic file data that has a url
   let pAuphonicFileData = pUuid.then (uuid => awaitProductionAsync(options, filename, uuid))
 
+  //now download the file
+  //this resolves to information about the download
   let pDownloadResult = pAuphonicFileData.then(auphonicFileData => getFileAsync(options, filename, auphonicFileData))
 
+  //resolve all of these promises and pass the results to the delete production method
   Promise.all([pUuid, pAuphonicFileData, pDownloadResult])
     .then(([uuid, auphonicFileData, downloadResult]) => deleteProductionAsync(options, filename, uuid, auphonicFileData, downloadResult))
     .then(() => {})
     .catch(err => console.log("Error running command: ", err))
 }
 
-//create a new production in auphonic
+//create a new production in Auphonic
 //resolves to the uuid of the production
 function createProductionAsync(options, filename) {
   return new Promise( (resolve, reject) => {
@@ -66,7 +71,7 @@ function createProductionAsync(options, filename) {
       console.log("Creating Auphonic production for", filename)
 
     request.post({
-        url: `https://${options.username}:${options.password}@auphonic.com/api/productions.json`, 
+        url: `https://${config.auphonicUsername}:${config.auphonicPassword}@auphonic.com/api/productions.json`, 
         json: true,
         body: {
           output_files: [{format:'aac', ending:'m4a'}],
@@ -102,7 +107,7 @@ function uploadFileToProductionAsync(options, filename, uuid) {
 
     //create a request for uploading the file
     request.post({
-        url: `https://${options.username}:${options.password}@auphonic.com/api/production/${uuid}/upload.json`, 
+        url: `https://${config.auphonicUsername}:${config.auphonicPassword}@auphonic.com/api/production/${uuid}/upload.json`, 
         json: true,
         formData: formData
       }, (err, response, body) => {
@@ -117,14 +122,14 @@ function uploadFileToProductionAsync(options, filename, uuid) {
   })
 }
 
-
+//start the production
 function startProductionAsync(options, filename, uuid) {
   return new Promise( (resolve, reject) => {
     if (options.verbose)
       console.log("Starting Auphonic production for ", filename)
 
     request.post({
-        url: `https://${options.username}:${options.password}@auphonic.com/api/production/${uuid}/start.json`, 
+        url: `https://${config.auphonicUsername}:${config.auphonicPassword}@auphonic.com/api/production/${uuid}/start.json`, 
         json: true
       }, (err, response, body) => {
         if (err) 
@@ -145,7 +150,7 @@ function startProductionAsync(options, filename, uuid) {
 function awaitProductionAsync(options, filename, uuid) {
   return new Promise ( (resolve, reject) => {
     request.get({
-      url: `https://${options.username}:${options.password}@auphonic.com/api/production/${uuid}.json`,
+      url: `https://${config.auphonicUsername}:${config.auphonicPassword}@auphonic.com/api/production/${uuid}.json`,
       json: true
       }, (err, response, body) => {
         if (err) 
@@ -175,13 +180,15 @@ function awaitProductionAsync(options, filename, uuid) {
   })
 }
 
+//delete the production now that it is completed and the file has been downloaded
+//!!! should not delete if the download failed?
 function deleteProductionAsync(options, filename, uuid, auphonicFileData, downloadResult) {
   return new Promise( (resolve, reject) => {
     if (options.verbose)
       console.log("Cleaning up Auphonic production for ", filename)
 
     request.delete({
-        url: `https://${options.username}:${options.password}@auphonic.com/api/production/${uuid}.json`, 
+        url: `https://${config.auphonicUsername}:${config.auphonicPassword}@auphonic.com/api/production/${uuid}.json`, 
         json: true
       }, (err, response, body) => {
         if (err) 
@@ -213,7 +220,7 @@ function getFileAsync(options, filename, downloadUrl) {
       console.log(`Downloading file from auphonic at URL ${downloadUrlPath} to ${outputFilename}`)
 
     //download the file
-    request.get(`https://${options.username}:${options.password}@${downloadUrlPath}`)
+    request.get(`https://${config.auphonicUsername}:${config.auphonicPassword}@${downloadUrlPath}`)
       .on('error', (err) => reject(err))
       .pipe(fs.createWriteStream(outputFilename))
       .on('finish', () => resolve(outputFilename))

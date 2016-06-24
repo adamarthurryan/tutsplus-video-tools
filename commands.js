@@ -11,6 +11,9 @@ const process = require('process')
 //  so command signature should be just (filename, config) => Promise
 
 
+//assert that the ffmpeg path is configured
+config.requireFfmpeg()
+
 //paths to the ffmpeg binaries for fluent-ffmpeg
 ffmpeg.setFfmpegPath(config.ffmpegPath)
 ffmpeg.setFfprobePath(config.ffprobePath)
