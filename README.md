@@ -21,6 +21,14 @@ Configure your Auphonic account credentials (optional) and the location of ffmpe
       "auphonicPassword": "<your-auphonic-password>"
     }
 
+For example, my config file is located in `C:\Users\Adam\.tutsplus-video-tools.json` and has the following contents:
+
+    {
+      "ffmpegBinPath": "C:\\Users\\Adam\\bin\\ffmpeg-20150913-git-d13a2df-win64-static\\bin",
+      "auphonicUsername": "adam.brown@envato.com",
+      "auphonicPassword": "-------"
+    }
+
 ## Tools
 
 The following tools are currently provided. More can be added, on request:
