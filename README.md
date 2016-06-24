@@ -4,6 +4,8 @@ A collection of command-line tools for efficient processing of video.
 
 ## Setup
 
+First, you'll need [Node.js](https://nodejs.org/en/). Install the latest version (currently 6.2).
+
 Install with NPM:
 
     npm install -g tutsplus-video-tools
