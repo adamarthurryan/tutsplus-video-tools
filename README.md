@@ -29,6 +29,10 @@ For example, my config file is located in `C:\Users\Adam\.tutsplus-video-tools.j
       "auphonicPassword": "-------"
     }
 
+If you don't want to use the Auphonic tool, you can leave the `auphonicUsername` and `auphonicPassword` out.
+
+
+
 ## Tools
 
 The following tools are currently provided. More can be added, on request:
@@ -50,6 +54,14 @@ By default, these tools will use MP4 with H.264 for video and AAC for audio. Som
 
 The commands are quiet by default, but for more detail about what is happening, use the `-v` flag.
 
+### Example: Add Fades
+
+The following will add fade in to the beginning of each video, and a fade out to the end.
+
+    tvt-fadeinout *.mp4
+
+The output files will be in the `fadeinout` folder and will have `-fadeinout` suffixes.
+
 ### Example: Processing With Auphonic
 
 The following will split videos into separate video and audio channels, process with Auphonic (noise reduction enabled, target loudness -18dB), and then recombine:
@@ -63,7 +75,7 @@ The output files will be in the `combine` folder.
 
 ### Example: Erase a Titlecard
 
-The following will erase a five second titlecard at the beginning of a lesson, by replacing the start of the video with the first frame after the titlecard. Then a fade will be applied to the titlecard. Audio will be unchanged.
+The following will erase a five second titlecard at the beginning of each lesson, by replacing the start of the video with the first frame after the titlecard. Then a fade will be applied to the titlecard. Audio will be unchanged.
 
     tvt-titlecard -d 5 lesson.mp4
     tvt-fadeinout --no-fade-out titlecard/lesson-titlecard.mp4
@@ -77,3 +89,5 @@ Similarly, you could add a titlecard from a `.png` file with the following.
 
     tvt-titlecard -d 5 --card-image titlecard.png *.mp4
     tvt-fadeinout --no-fade-out titlecard/*-titlecard.mp4
+
+The output fileS will be in the `fadeinout` folder and will have `-titlecard-fadeinout` suffixes.
