@@ -11,7 +11,8 @@
     "tvt-split": "split.js",
     "tvt-combine": "combine.js",
     "tvt-auphonic": "auphonic.js",
-    "tvt-remove-titlecard": "remove-titlecard.js"
+    "tvt-titlecard": "titlecard.js",
+    "tvt-metadata": "metadata.js"
   },
   "author": "Adam Brown",
   "license": "BSD-2-Clause",

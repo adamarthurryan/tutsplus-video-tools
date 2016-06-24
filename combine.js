@@ -19,9 +19,10 @@ ffmpeg.setFfprobePath(config.ffprobePath)
 program
   .version(config.version)
   .usage('[options] <videofile ...>')
-  .description('combines the specified video files with their cooresponding audio files (which should be in the same folder and differ only in extension)')
+  .description('Combines each video files with a cooresponding audio files (which should be in the same folder and differ only in extension).)
   .option('--output-suffix [string]', 'Suffix for output filenames', '')
   .option('--output-folder [string]', 'Folder for output filenames [combine]', 'combine')
+  .option('--output-extension [string]', 'Extension for output filenames [.mp4]', '.mp4')
   .option('--audio-extension [string]', 'Extension for audio files [.m4a]', '.m4a')
   .option('-v, --verbose', 'Logs information about execution')
   .parse(process.argv)
@@ -31,30 +32,21 @@ program
 commands.ensureOutputFolder(program)
 
 //run the combine command on all program arguments
-commands.runCommandAllSync(program, combineCommand)
+commands.runCommandAllSequential(program, program.args, combineCommand)
 
+function combineCommand (options, filename, metadata) {
 
-function combineCommand (program, filename, metadata) {
+  const outputFilename = commands.getOutputFilename(options, filename)
+
+  const inputFilenameAudio = commands.changeExtension(filename, options.audioExtension)
+
+  if (options.verbose) {
+    console.log(`\nCombining from ${filename} and ${inputFilenameAudio}, writing to ${outputFilename}`)
+  }
 
   //returns a promise that resolves or rejects according to the results of the combine
   return new Promise( function (resolve, reject) {
-
-    const outputPath = path.join(process.cwd(), program.outputFolder)
-
-    //determine output filename by adding a suffix to the input filename
-    const extname = path.extname(filename)
-    const basename = path.basename(filename, extname)
-
-    const ext = '.mp4'
-
-    const inputFilenameAudio = path.join(path.dirname(filename), basename+program.audioExtension)
-    const outputFilename = path.join(outputPath, basename+program.outputSuffix+ext)
-
-
-    if (program.verbose) {
-      console.log(`\nCombining from ${filename} and ${inputFilenameAudio}, writing to ${outputFilename}`)
-    }
-
+  
     //!!! could detect audio/video format by extension and decide whether to 
     //  - copy (eg. when audio extension is ".aac" or ".m4a"
     //  - or transcode

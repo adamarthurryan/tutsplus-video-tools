@@ -16,8 +16,8 @@ ffmpeg.setFfmpegPath(config.ffmpegPath)
 ffmpeg.setFfprobePath(config.ffprobePath)
 
 //ensure that the output folder exists
-function ensureOutputFolder(program) {
-  const outputPath = path.join(process.cwd(), program.outputFolder)
+function ensureOutputFolder(options) {
+  const outputPath = path.join(process.cwd(), options.outputFolder)
 
   //ensure that output path exists
   try {
@@ -29,27 +29,36 @@ function ensureOutputFolder(program) {
   }
 }
 
+function changeExtension(filename, ext) {
+  const oldExt = path.extname(filename)
+  const basename = path.basename(filename, oldExt)
+  const dirname = path.dirname(filename)
+  const newFilename = path.join(dirname, basename+ext)
+  return newFilename
+}
 
-function applyFiltersAsync (program, filename, filters) {
+//returns the output filename for the given input filename and options
+//options specify an outputFolder and outputSuffix, which are combined with the input filename
+function getOutputFilename(options, filename) {
+    const extname = path.extname(filename)
+    const basename = path.basename(filename, extname)
+    const outputPath = path.join(process.cwd(), options.outputFolder) //??? do we need the process.cwd() in the path?
+    const outputFilename = path.join(outputPath, basename+options.outputSuffix+options.outputExtension)
+
+    return outputFilename
+}
+
+function applyFiltersAsync (options, filename, filters) {
+
+  const outputFilename = getOutputFilename(options, filename)
+
+  if (options.verbose) 
+    console.log(`Applying filters to ${filename}, writing to ${outputFilename}`)
 
   //returns a promise that resolves or rejects according to the results of the filters
   return new Promise( function (resolve, reject) {
-
-    //determine output filename by adding a suffix to the input filename
-    const extname = path.extname(filename)
-    const basename = path.basename(filename, extname)
-    const outputPath = path.join(process.cwd(), program.outputFolder)
-    const outputFilename = path.join(outputPath, basename+program.outputSuffix+extname)
-
-
-    if (program.verbose) 
-      console.log(`Applying filters to ${filename}, writing to ${outputFilename}`)
-  
-    let cmd = ffmpeg(filename)
-
-    cmd.videoFilter(filters)
-    
-    cmd
+    ffmpeg(filename)
+      .videoFilter(filters)    
       .on('error', err => reject(err))
       .on('end', () => resolve())
       .save(outputFilename)
@@ -58,8 +67,8 @@ function applyFiltersAsync (program, filename, filters) {
 
 
 //wraps the ffprobe function of the fluent-ffmpeg module in a promise
-function getMetadataAsync (program, filename) {
-  if (program.verbose) 
+function getMetadataAsync (options, filename) {
+  if (options.verbose) 
     console.log(`Getting metadata for ${filename}`)
 
   //returns a promise that resolves or rejects according the the results of the probe
@@ -72,12 +81,11 @@ function getMetadataAsync (program, filename) {
   })
 }
 
-//command is a function with the signature (program, filename, metadata) => Promise
-function runCommandAsync (program, filename, command) {
-  return getMetadataAsync(program, filename)
-  .then(metadata => command(program, filename, metadata))
+//command is a function with the signature (options, filename, metadata) => Promise
+function runCommandAsync (options, filename, command) {
+  return getMetadataAsync(options, filename)
+  .then(metadata => command(options, filename, metadata))
   .then( () => {
-    if (program.verbose) console.log("... done")
   })
   .catch( (err) => {
     console.log("Error running command: ", err)
@@ -85,19 +93,41 @@ function runCommandAsync (program, filename, command) {
   })
 }
 
-//runs the command on each argument of the program
-//command has the signature (program, filename, metadata)
-function runCommandAllSync(program, command) {
+//runs the command on each file in the array
+//command has the signature (options, filename, metadata)
+//processes files one after the other
+function runCommandAllSequential(options, filenames, command) {
   //for each filename
-  program.args.reduce( 
+  filenames.reduce( 
     //wait for the previous file to complete
     (promise, filename) => promise.then(
       //then start processing the next file
-      () => runCommandAsync(program, filename, command)
-    ), 
+      () => runCommandAsync(options, filename, command)
+    )
+    //handle errors
+    .catch((err) => {
+      console.log("Error running command: ", err)
+      process.exit(1)
+    }), 
     //start with an empty promise
     Promise.resolve()
   )
 }
 
-module.exports = {getMetadataAsync, applyFiltersAsync, runCommandAsync, runCommandAllSync, ensureOutputFolder}
+//runs the command on each file in the array
+//command has the signature (options, filename, metadata)
+//processes files concurrently
+function runCommandAllConcurrent(options, filenames, command) {
+  //for each filename
+  filenames.map( 
+    //wait for the previous file to complete
+    (filename) => runCommandAsync(options, filename, command)
+    //handle errors
+    .catch((err) => {
+      console.log("Error running command: ", err)
+      process.exit(1)
+    })
+  )
+}
+
+module.exports = {getMetadataAsync, applyFiltersAsync, runCommandAsync, runCommandAllSequential, runCommandAllConcurrent,  ensureOutputFolder, getOutputFilename, changeExtension}

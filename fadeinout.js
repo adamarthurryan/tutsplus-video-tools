@@ -12,11 +12,12 @@ const commands = require('./commands')
 program
   .version(config.version)
   .usage('[options] <file ...>')
+  .description('Adds a fade from or to black to the beginning and end of each video.')
   .option('--output-suffix [string]', 'Suffix for output filenames [-fadeinout]', '-fadeinout')
   .option('--output-folder [string]', 'Folder for output filenames [fadeinout]', 'fadeinout')
+  .option('--output-extension [string]', 'Extension for output filenames [.mp4]', '.mp4')
   .option('-d, --fade-duration [seconds]', 'Fade duration in seconds', parseFloat, 1.0)
   .option('-v, --verbose', 'Logs information about execution')
-  .option('--dump-metadata', 'Dump metadata to console')
   .parse(process.argv)
 
 
@@ -24,7 +25,7 @@ program
 commands.ensureOutputFolder(program)
 
 //run the fadeinout command on the program arguments
-commands.runCommandAllSync(program, fadeInOutCommand)
+commands.runCommandAllSequential(program, program.args, fadeInOutCommand)
 
 function fadeInOutCommand(program, filename, metadata) {
   return commands.applyFiltersAsync(program, filename, defineFadeInOutFilters(program, filename, metadata))
@@ -52,10 +53,8 @@ function defineFadeInOutFilters(program, filename, metadata) {
     filter: 'fade',
     options: `t=out:st=${duration-program.fadeDuration}:d=${program.fadeDuration}`
   })
-
-
-
   
+
   return filters
 }
 
