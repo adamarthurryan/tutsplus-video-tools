@@ -14,7 +14,7 @@ program
   .version(config.version)
   .usage('[options] <file ...>')
   .description('Processes each file with the auphonic API. Works with video files, but for faster upload it is better to split videos and only run this command on the audio channel.')
-  .option('--output-suffix <string>', 'Suffix for output filenames [-auphonic]', '-auphonic')
+  .option('--output-suffix <string>', 'Suffix for output filenames [auphonic]', 'auphonic')
   .option('--output-folder <string>', 'Folder for output filenames [auphonic]', 'auphonic')
   .option('--output-extension [string]', 'Extension for output filenames [.m4a]', '.m4a')
   .option('-u, --username <username>', 'Username for Auphonic API account (required)')
@@ -24,6 +24,9 @@ program
   .option('-v, --verbose', 'Logs information about execution')
   .option('--debug', 'Dump debugging info to the console')
   .parse(process.argv)
+
+if (typeof program.loudnessTarget == "string")
+  program.loudnessTarget = parseInt(program.loudnessTarget)
 
 //command-line username and password override the config file
 if (program.username)
@@ -172,7 +175,7 @@ function awaitProductionAsync(options, filename, uuid) {
             reject(`Product returned error status (${data.status}): ${data.status_string}`)
           //otherwise pause for a second and retry
           else {
-            setTimeout(() => resolve(awaitProductionAsync(options, filename, uuid)), 1000)
+            setTimeout(() => resolve(awaitProductionAsync(options, filename, uuid)), 2000)
           }
         }
       }

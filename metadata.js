@@ -12,7 +12,7 @@ const commands = require('./commands')
 program
   .version(config.version)
   .usage('<file ...>')
-  .description('Outputs the metadata for each video.')
+  .description('Prints metadata informat for each video.')
 
   .parse(process.argv)
 

@@ -17,7 +17,7 @@ program
   .version(config.version)
   .usage('[options] <file ...>')
   .description('Overwrites the start of each video with a titlecard. If no titlecard image is given, the card will be extracted from the next frame of the video after the title card duration.')
-  .option('--output-suffix [string]', 'Suffix for output filenames [-titlecard]', '-titlecard')
+  .option('--output-suffix [string]', 'Suffix for output filenames [titlecard]', 'titlecard')
   .option('--output-folder [string]', 'Folder for output filenames [titlecard]', 'titlecard')
   .option('--output-extension [string]', 'Extension for output filenames [.mp4]', '.mp4')
   .option('--card-image [string]', 'Path to replacement titlecard image\nDefaults to image captured from first post-titlecard frame.')

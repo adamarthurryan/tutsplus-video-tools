@@ -32,6 +32,22 @@ function ensureOutputFolder(options) {
   }
 }
 
+function addSuffix(filename, suffix) {
+  const ext = path.extname(filename)
+  const basename = path.basename(filename, ext)
+  const dirname = path.dirname(filename)
+  const newFilename = path.join(dirname, basename+"-"+suffix+ext)
+  return newFilename
+}
+
+function changeFolder(filename, folder) {
+  const ext = path.extname(filename)
+  const basename = path.basename(filename, ext)
+  const oldDirname = path.dirname(filename)
+  const newFilename = path.join(folder, basename+ext)
+  return newFilename
+}
+
 function changeExtension(filename, ext) {
   const oldExt = path.extname(filename)
   const basename = path.basename(filename, oldExt)
@@ -43,10 +59,14 @@ function changeExtension(filename, ext) {
 //returns the output filename for the given input filename and options
 //options specify an outputFolder and outputSuffix, which are combined with the input filename
 function getOutputFilename(options, filename) {
-    const extname = path.extname(filename)
-    const basename = path.basename(filename, extname)
+    const basename = path.basename(filename)
     const outputPath = path.join(process.cwd(), options.outputFolder) //??? do we need the process.cwd() in the path?
-    const outputFilename = path.join(outputPath, basename+options.outputSuffix+options.outputExtension)
+    let outputFilename = path.join(outputPath, basename)
+
+    if (options.outputExtension)
+      outputFilename = changeExtension(outputFilename, options.outputExtension)
+    if (options.outputSuffix)
+      outputFilename = addSuffix(outputFilename, options.outputSuffix)
 
     return outputFilename
 }
@@ -133,4 +153,4 @@ function runCommandAllConcurrent(options, filenames, command) {
   )
 }
 
-module.exports = {getMetadataAsync, applyFiltersAsync, runCommandAsync, runCommandAllSequential, runCommandAllConcurrent,  ensureOutputFolder, getOutputFilename, changeExtension}
+module.exports = {getMetadataAsync, applyFiltersAsync, runCommandAsync, runCommandAllSequential, runCommandAllConcurrent,  ensureOutputFolder, getOutputFilename, changeExtension, addSuffix, changeFolder}
