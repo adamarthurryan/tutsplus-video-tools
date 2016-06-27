@@ -29,11 +29,14 @@ program
   .parse(process.argv)
 
 
+//expand globs in file arguments
+let filenames = commands.expandGlobsSync(program.args)
+
 //ensure that the output folder exists
 commands.ensureOutputFolder(program)
 
 //run the split command on all program arguments
-commands.runCommandAllSequential(program, program.args, splitCommand)
+commands.runCommandAllSequential(program, filenames, splitCommand)
 
 
 function splitCommand (options, filename, metadata) {

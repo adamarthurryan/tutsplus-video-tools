@@ -25,6 +25,10 @@ program
   .option('--debug', 'Dump debugging info to the console')
   .parse(process.argv)
 
+//expand globs in file arguments
+let filenames = commands.expandGlobsSync(program.args)
+
+//typecast arguments
 if (typeof program.loudnessTarget == "string")
   program.loudnessTarget = parseInt(program.loudnessTarget)
 
@@ -41,7 +45,7 @@ config.requireAuphonicUser()
 commands.ensureOutputFolder(program)
 
 //run the Auphonic command on all files
-commands.runCommandAllConcurrent(program, program.args, auphonicCommand)
+commands.runCommandAllConcurrent(program, filenames, auphonicCommand)
 
 //sequence the creation of production, uploading of file, etc. with the Auphonic API
 function auphonicCommand (options, filename, metadata) {

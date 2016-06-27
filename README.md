@@ -4,7 +4,7 @@ A collection of command-line tools for efficient processing of video.
 
 ## Setup
 
-First, you'll need [Node.js](https://nodejs.org/en/). Install the latest version (currently 6.2).
+First, you'll need [Node.js](https://nodejs.org/en/). Be sure to install the latest version (currently 6.2)! The video tools will not work properly with the 4.x version of Node.js.
 
 Install with NPM:
 

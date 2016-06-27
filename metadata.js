@@ -16,9 +16,11 @@ program
 
   .parse(process.argv)
 
+//expand globs in file arguments
+let filenames = commands.expandGlobsSync(program.args)
 
 //run the fadeinout command on the program arguments
-commands.runCommandAllSequential(program, program.args, metadataDumpCommand)
+commands.runCommandAllSequential(program, filenames, metadataDumpCommand)
 
 function metadataDumpCommand(program, filename, metadata) {
   console.log(`-- ${filename} --`)

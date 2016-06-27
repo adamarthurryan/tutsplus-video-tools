@@ -4,6 +4,7 @@ const path = require('path')
 const fse = require('fs-extra')
 const ffmpeg = require('fluent-ffmpeg')
 const process = require('process')
+const glob = require('./glob')
 
 //!!! this file should not depend on ffmpeg
 //instead of passing "program" around we should pass a config object
@@ -17,6 +18,17 @@ config.requireFfmpeg()
 //paths to the ffmpeg binaries for fluent-ffmpeg
 ffmpeg.setFfmpegPath(config.ffmpegPath)
 ffmpeg.setFfprobePath(config.ffprobePath)
+
+
+//syncronously expands each of the given arguments into an array of matched filenames
+//!!! this could be improved by running each glob expansion in parallel
+function expandGlobsSync(args) {
+  args
+    //expand each globbed argument
+    .map(arg => glob.sync(arg, {}))
+    //flatten the array
+    .reduce((a,b) => a.concat(b), [])
+}
 
 //ensure that the output folder exists
 function ensureOutputFolder(options) {

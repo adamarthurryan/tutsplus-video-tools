@@ -23,12 +23,14 @@ program
   .parse(process.argv)
 
 
+//expand globs in file arguments
+let filenames = commands.expandGlobsSync(program.args)
 
 //ensure that the output folder exists
 commands.ensureOutputFolder(program)
 
 //run the fadeinout command on the program arguments
-commands.runCommandAllSequential(program, program.args, fadeInOutCommand)
+commands.runCommandAllSequential(program, filenames, fadeInOutCommand)
 
 function fadeInOutCommand(options, filename, metadata) {
   return commands.applyFiltersAsync(options, filename, defineFadeInOutFilters(options, filename, metadata))
