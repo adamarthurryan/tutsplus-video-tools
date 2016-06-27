@@ -8,7 +8,7 @@ const process = require('process')
 
 const fs = require('fs')
 
-const conffilePath = path.join(os.homedir(), '.tuts-video-tools.json')
+const conffilePath = path.join(os.homedir(), '.tutsplus-video-tools.json')
 
 nconf
   .env()
