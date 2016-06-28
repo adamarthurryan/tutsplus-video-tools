@@ -1,19 +1,28 @@
 # Tuts+ Video Tools
 
-A collection of command-line tools for efficient processing of video.
+A collection of command-line tools for efficient manipulation of video.
 
 ## Setup
 
-First, you'll need [Node.js](https://nodejs.org/en/). Be sure to install the latest version (currently 6.2)! The video tools will not work properly with the 4.x version of Node.js.
+### 1. Install Node.js
 
-Install with NPM:
+First, you'll need [Node.js](https://nodejs.org/en/). _Be sure to install the latest version (currently 6.2)! The video tools will not work properly with the 4.x version of Node.js._
+
+### 2. Install the Video Tools
+
+Run the following command from your terminal, command prompt or what have you.
 
     npm install -g tutsplus-video-tools
 
+### 3. Install ffmpeg
 
-[Install ffmpeg](https://ffmpeg.org/download.html).
+[Download ffmpeg here](https://ffmpeg.org/download.html) and install. Take note of the folder where you installed ffmpeg.
 
-Configure your Auphonic account credentials (optional) and the location of ffmpeg binaries. Create a file named `.tutsplus-video-tools.json` in your user folder (eg. `C:\Users\<username>` for Windows or `/Users/<username>` on Mac. Add the following contents:
+### 4. Configure the Video Tools
+
+A configuration file is used to store your Auphonic account credentials (optional) and the location of ffmpeg binaries. 
+
+Create a file named `.tutsplus-video-tools.json` in your user folder (eg. `C:\Users\<username>` for Windows or `/Users/<username>` on Mac. Add the following contents:
 
     {
       "ffmpegBinPath": "<path-where-ffmpeg-binaries-are-found>",
@@ -28,6 +37,8 @@ For example, my config file is located in `C:\Users\Adam\.tutsplus-video-tools.j
       "auphonicUsername": "adam.brown@envato.com",
       "auphonicPassword": "-------"
     }
+
+A tricky detail: Windows paths have backslashes instead of forwardslashes to separate each folder in the path, and in JSON these need to be "escaped". So each backslash - each `\` - should be doubled as in the example above. Also note the final `bin` in the path. This is the actual folder where the `ffmpeg` and `ffprobe` binaries are found - usually a subfolder of the installation folder.
 
 If you don't want to use the Auphonic tool, you can leave the `auphonicUsername` and `auphonicPassword` out.
 
@@ -44,6 +55,7 @@ The following tools are currently provided. More can be added, on request:
  - `tvt-split`: Splits the videos files into separate video and audio channels.
  - `tvt-titlecard`: Overwrites the start of each video with a titlecard. If no titlecard image is given, the card will be extracted from the next frame of the video after the title card duration.
 
+
 ## Usage
 
 Run any of these commands with `-h` or `--help` for more detailed information about flags and usage.
@@ -53,6 +65,7 @@ Most of these tools write their output to a subfolder of the folder the command 
 By default, these tools will use MP4 with H.264 for video and AAC for audio. Some commands have the option to write to different file formats with the `--output-extension` flag.
 
 The commands are quiet by default, but for more detail about what is happening, use the `-v` flag.
+
 
 ### Example: Add Fades
 
