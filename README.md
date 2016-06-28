@@ -48,7 +48,7 @@ If you don't want to use the Auphonic tool, you can leave the `auphonicUsername`
 
 The following tools are currently provided. More can be added, on request:
 
- - `tvt-auphonic`:  each file with the auphonic API. Works with video files, but for faster upload it is better to split videos and only run this command on the audio channel.
+ - `tvt-auphonic`: Process each file with the auphonic API. Applies automatic leveling and optional noise reduction. Works with video files, but for faster upload it is better to split videos and only run this command on the audio channel.
  - `tvt-combine`: Combines each video files with a cooresponding audio files (which should be in the same folder and differ only in extension).
  - `tvt-fadeinout`: Adds a fade from or to black to the beginning and end of each video.
  - `tvt-metadata`: Prints metadata informat for each video.
