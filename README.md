@@ -1,6 +1,6 @@
 # Tuts+ Video Tools
 
-A collection of command-line tools for efficient manipulation of video.
+This is a suite of command line tools for bulk processing of videos. Tools are included for bulk splitting and recombining audio/video tracks, for adding or replacing titlecards, for adding fade ins and outs, and for processing audio with Auphonic.
 
 ## Setup
 
