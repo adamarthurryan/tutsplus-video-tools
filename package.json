@@ -12,7 +12,8 @@
     "tvt-combine": "combine.js",
     "tvt-auphonic": "auphonic.js",
     "tvt-titlecard": "titlecard.js",
-    "tvt-metadata": "metadata.js"
+    "tvt-metadata": "metadata.js",
+    "tvt-filter": "filter.js"
   },
   "author": "Adam Brown",
   "license": "BSD-2-Clause",
