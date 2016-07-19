@@ -1,6 +1,6 @@
 # Tuts+ Video Tools
 
-This is a suite of command line tools for bulk processing of videos. Tools are included for bulk splitting and recombining audio/video tracks, for adding or replacing titlecards, for adding fade ins and outs, and for processing audio with Auphonic.
+This is a suite of command line tools for bulk processing of videos. Tools are included for bulk splitting and recombining audio/video tracks, for adding or replacing titlecards, for adding fade ins and outs, for rescaling and speeding, and for processing audio with Auphonic.
 
 ## Setup
 
@@ -51,6 +51,7 @@ The following tools are currently provided. More can be added, on request:
  - `tvt-auphonic`: Process each file with the auphonic API. Applies automatic leveling and optional noise reduction. Works with video files, but for faster upload it is better to split videos and only run this command on the audio channel.
  - `tvt-combine`: Combines each video files with a cooresponding audio files (which should be in the same folder and differ only in extension).
  - `tvt-fadeinout`: Adds a fade from or to black to the beginning and end of each video.
+ - `tvt-filter`: Apply an ffmpeg filter to each file. A video filter and audio filter can be specified. Also has some preconfigured filters (--speed).
  - `tvt-metadata`: Prints metadata informat for each video.
  - `tvt-split`: Splits the videos files into separate video and audio channels.
  - `tvt-titlecard`: Overwrites the start of each video with a titlecard. If no titlecard image is given, the card will be extracted from the next frame of the video after the title card duration.

@@ -6,7 +6,13 @@ const ffmpeg = require('fluent-ffmpeg')
 const process = require('process')
 const glob = require('glob')
 
-//!!! this file should not depend on ffmpeg
+
+//!!! add a progress bar
+// https://www.npmjs.com/package/progress
+// https://github.com/fluent-ffmpeg/node-fluent-ffmpeg#progress-transcoding-progress-information
+
+
+
 //instead of passing "program" around we should pass a config object
 //not all commands depend on metadata - make that part of the command
 //  so command signature should be just (filename, config) => Promise
