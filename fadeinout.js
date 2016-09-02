@@ -55,7 +55,7 @@ function defineFadeInOutFilters(options, filename, metadata) {
     })
   }
   
-  if (options.noFadeOut) {
+  if (!options.noFadeOut) {
     //fade out
     filters.push({
       filter: 'fade',
