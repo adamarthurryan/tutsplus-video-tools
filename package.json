@@ -1,6 +1,6 @@
 {
   "name": "tutsplus-video-tools",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "a suite of command line tools for bulk processing of videos. Tools are included for bulk splitting and recombining audio/video tracks, for adding or replacing titlecards, for adding fade ins and outs, for rescaling and speeding, and for processing audio with Auphonic.",
   "main": "index.js",
   "scripts": {
