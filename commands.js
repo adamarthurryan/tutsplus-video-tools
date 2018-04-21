@@ -171,12 +171,57 @@ function runCommandAllConcurrent(options, filenames, command) {
   )
 }
 
+function runCommandAllConcurrentBatches(options, filenames, command, batchSize=0) {
+  //split filenames up into batches
+  let batches = []
+  if (batchSize==0)
+    batches=[filenames]
+  else
+    batches = splitArray(filenames, batchSize)
+
+  //for each filename
+  batches.reduce( 
+    
+    //wait for the previous file to complete
+    (promise, batch) => promise.then( ()=>
+      //make a promise that will conclude when all the files are processed
+      Promise.all(batch.map(
+        //create a promise for each file and start running
+        (filename) => runCommandAsync(options, filename, command)
+      ))
+      //handle errors
+      .catch((err) => {
+        console.log("Error running command: ", err)
+        process.exit(1)
+      })
+
+    ),
+
+    //start with an empty promise
+    Promise.resolve()
+  )
+
+}
+
+function splitArray(input, maxLength) {
+  let count = Math.ceil(input.length/maxLength)
+  let output = []
+
+  for (var i=0; i<count; i++) {
+    output.push(input.slice(maxLength*i, maxLength*(i+1)))
+  }
+
+  return output
+}
+
+
 module.exports = {
     getMetadataAsync, 
     applyFiltersAsync, 
     runCommandAsync, 
     runCommandAllSequential, 
     runCommandAllConcurrent, 
+    runCommandAllConcurrentBatches,
     ensureOutputFolder, 
     getOutputFilename,
     changeExtension,

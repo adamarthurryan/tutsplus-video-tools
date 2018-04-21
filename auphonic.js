@@ -21,6 +21,7 @@ program
   .option('-p, --password <password>', 'Password for Auphonic API account (required)')
   .option('-n, --noise-reduction', 'Apply noise reduction [false]', false)
   .option('-l, --loudness-target <amount>', "Loudness target in dB [-18]", -18, parseInt)
+  .option('--batch-size <amount>', "Simultaneous number of concurrent files to process with auphonic", 8, parseInt)
   .option('-v, --verbose', 'Logs information about execution')
   .option('--debug', 'Dump debugging info to the console')
   .parse(process.argv)
@@ -45,7 +46,7 @@ config.requireAuphonicUser()
 commands.ensureOutputFolder(program)
 
 //run the Auphonic command on all files
-commands.runCommandAllConcurrent(program, filenames, auphonicCommand)
+commands.runCommandAllConcurrentBatches(program, filenames, auphonicCommand, parseInt(program.batchSize))
 
 //sequence the creation of production, uploading of file, etc. with the Auphonic API
 function auphonicCommand (options, filename, metadata) {
@@ -64,7 +65,7 @@ function auphonicCommand (options, filename, metadata) {
   let pDownloadResult = pAuphonicFileData.then(auphonicFileData => getFileAsync(options, filename, auphonicFileData))
 
   //resolve all of these promises and pass the results to the delete production method
-  Promise.all([pUuid, pAuphonicFileData, pDownloadResult])
+  return Promise.all([pUuid, pAuphonicFileData, pDownloadResult])
     .then(([uuid, auphonicFileData, downloadResult]) => deleteProductionAsync(options, filename, uuid, auphonicFileData, downloadResult))
     .then(() => {})
     .catch(err => console.log("Error running command: ", err))
